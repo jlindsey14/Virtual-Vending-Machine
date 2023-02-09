@@ -1,0 +1,18 @@
+Yellow Duck|0
+Cube Duck|0
+Beach Duck|0
+Bat Duck|0
+Emperor Penguin|0
+Macaroni Penguin|0
+Rockhopper Penguin|0
+Galapagos Penguin|0
+Black Cat|0
+White Cat|0
+Tabby Cat|0
+Calico Cat|0
+Unicorn Pony|0
+Pegasus Pony|0
+Horse|0
+Rainbow Horse|1
+
+TOTAL SALES: $1.35

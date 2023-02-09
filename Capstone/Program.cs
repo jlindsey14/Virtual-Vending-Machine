@@ -6,7 +6,11 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            VendingMachine VM = new VendingMachine();
+            Transaction transaction = new Transaction(VM);
+            VM.Transaction = transaction;
+            Console.Write("Welcome!");
+            VM.DisplayOptions();
         }
     }
 }
