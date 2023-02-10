@@ -30,17 +30,17 @@ namespace Capstone
             while (true)
             {
                 //Start main menu
-                Console.WriteLine(DisplayOptions());
-                int optionChoice = GetOptionChoice();
-                if (optionChoice == 3)
+                Console.WriteLine(DisplayMainMenu());
+                int mainMenuChoice = GetMainMenuChoice();
+                if (mainMenuChoice == 3)
                 {
                     break;
                 }
-                Console.WriteLine(CallMenuOption(optionChoice)); 
+                Console.WriteLine(CallMenuOption(mainMenuChoice)); 
             }   
         }
 
-        public string DisplayOptions()
+        public string DisplayMainMenu()
         {
             return @$"
 Please select from the following options: (enter number)
@@ -50,7 +50,7 @@ Please select from the following options: (enter number)
 3. Exit";
         }
 
-        public int GetOptionChoice()
+        public int GetMainMenuChoice()
         {
             Console.WriteLine();
             // Defensive coding for user input to choose an option
@@ -83,16 +83,12 @@ Please select from the following options: (enter number)
                     return DisplayItems();
                 case 2:
                     int purchaseChoice = 0;
-                    while (true)
+                    Console.WriteLine(DisplayPurchaseOptions());
+                    purchaseChoice = GetPurchaseInput();
+                    if(purchaseChoice == 3)
                     {
-                  
-                        Console.WriteLine(DisplayPurchaseOptions());
-                        purchaseChoice = GetPurchaseInput();
-                        if(purchaseChoice == 3)
-                        {
-                            CallPurchaseOption(3);
-                            break;
-                        }
+                        CallPurchaseOption(3);
+                        break;
                     }
                     return CallPurchaseOption(purchaseChoice);
                 case 3:
@@ -155,35 +151,31 @@ Current money provided: {Transaction.Balance:C2}
 
         public string CallPurchaseOption(int option)
         {
-            while (true)
+            switch (option)
             {
-                if (option == 1 | option ==2)
-                {
-                    switch (option)
+                case 1:
+                    decimal moneyFed = FeedMoney();
+                    Transaction.FeedMoney(moneyFed);
+                    return ReadMoney(moneyFed);
+                case 2:
+                    string slotID = SelectProduct();
+                    if (!SlotToAnimalDictionary.ContainsKey(slotID))
                     {
-                        case 1:
-                            decimal moneyFed = FeedMoney();
-                            Transaction.FeedMoney(moneyFed);
-                            return "";
-                        case 2:
-                            string slotID = SelectProduct();
-                            if (!SlotToAnimalDictionary.ContainsKey(slotID))
-                            {
-                                return "Invalid Slot ID, try again.";
-                            }
-                            else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
-                            {
-                                return "Sorry, item SOLD OUT!";
-                            }
-                            else if (SlotToAnimalDictionary[slotID].Price > Transaction.Balance)
-                            {
-                                return ("Sorry, not enough funds");
-                            }
-                            return slotID;
-                    }  
-                }
-                else FinalizeTransaction(); 
-            }
+                        return "Invalid Slot ID, try again.";
+                    }
+                    else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
+                    {
+                        return "Sorry, item SOLD OUT!";
+                    }
+                    else if (SlotToAnimalDictionary[slotID].Price > Transaction.Balance)
+                    {
+                        return ("Sorry, not enough funds");
+                    }
+                    return slotID;
+                case 3:
+                    return FinalizeTransaction();
+            }  
+            
         }
 
         public decimal FeedMoney()
@@ -209,6 +201,11 @@ Current money provided: {Transaction.Balance:C2}
             
             decimal decimalAmount = (decimal)dollarAmount;
             return decimalAmount;
+        }
+
+        public string ReadMoney(decimal money)
+        {
+            return $"You entered {money:C2}, your total balance is {Transaction.Balance:C2}";
         }
 
         public string SelectProduct()
