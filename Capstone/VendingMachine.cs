@@ -16,6 +16,7 @@ namespace Capstone
         public List<Animal> Inventory { get; } = new List<Animal>();
         public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>(); // Key = the animal's slot ID, Value = the animal object
         public Transaction Transaction { get; set; }
+        public SpeechSynthesizer Synth { get; }
         //public SpeechSynthesizer synthesizer { get; } = new SpeechSynthesizer();
 
         //File paths for input and output files.
@@ -30,6 +31,8 @@ namespace Capstone
         public VendingMachine()
         {
             FileRead();
+            Synth = new SpeechSynthesizer();
+            Synth.SetOutputToDefaultAudioDevice();
             foreach (Animal animal in Inventory)
             {
                 SlotToAnimalDictionary[animal.SlotID] = animal;
@@ -41,9 +44,7 @@ namespace Capstone
         //The main menu call function. Uses while loops and conditional logic to display appropriate menu options.
         public void Run()
         {
-            var synth = new SpeechSynthesizer();
-            synth.SetOutputToDefaultAudioDevice();
-            synth.Speak("...Beep Boop Bop. Beep Boop!");
+            Synth.Speak("Beep Boop. I am a vending machine.");
 
             Transaction = new Transaction();
             while (true)
@@ -252,6 +253,7 @@ Current money provided: {Transaction.Balance:C2}
             while (dollarAmount < 1);
             
             decimal decimalAmount = (decimal)dollarAmount;
+            Synth.SpeakAsync("Beep Boop. nom nom nom");
             return decimalAmount;
         }
 
@@ -277,6 +279,7 @@ Current money provided: {Transaction.Balance:C2}
         {
             string changeGiven = Transaction.GiveChange();
             WriteLog();
+            Synth.SpeakAsync("Beep Boop. Cha-Ching. Goodbye Loser Human");
             return changeGiven + "\nWelcome!";
         }
 
@@ -287,9 +290,9 @@ Current money provided: {Transaction.Balance:C2}
             string purchaseString = $"You purchased {animal.Name} for {animal.Price:C2}! \n";
             string dispenseMessage = animal.DispenseMessage;
             string remainingBalance = $"\nYour remaining balance is {Transaction.Balance:C2}";
-            
-            
+            Synth.SpeakAsync($"Beep Boop. Here is your dumb animal. {animal.DispenseMessage}");
             return purchaseString + dispenseMessage + remainingBalance;
+            
 
         }
 
