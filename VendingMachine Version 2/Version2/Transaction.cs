@@ -7,135 +7,57 @@ namespace Capstone
 {
     public class Transaction
     {
-        public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>();
-        public VendingMachine VM { get; }
+        //public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>();
+        //public VendingMachine VM { get; }
         public List<string> Logs { get; set; } = new List<string>();// Contains list of logs items that detail: DateTime, action, amount deposited/spent, new balance
         public decimal Balance { get; set; } = 0M;
 
         string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
 
-        public Transaction(VendingMachine VM)
+        public Transaction()
         {
-            this.VM = VM;
+            
 
-            foreach (Animal animal in VM.Inventory)
-            {
-                SlotToAnimalDictionary[animal.SlotID] = animal;
-            }
+            
         }
 
 
 
-        public void DisplayItems()
+
+
+        public void FeedMoney(decimal input)
         {
-            Console.WriteLine();
-            Console.WriteLine("Available Inventory:");
-            Console.WriteLine();
-            foreach (Animal animal in VM.Inventory)
-            {
-                string availability = animal.NumRemaining > 0 ? (animal.NumRemaining).ToString() + " left" : "Sold Out";
-                Console.WriteLine($"{animal.SlotID}. {animal.Name} {animal.Price:C2} ({availability})");
-            }
+            Balance += input;
         }
 
-        // Purchase menu
-        public void DisplayPurchaseOptions()
-        {
-            Console.WriteLine(@$"
-Current money provided: {Balance:C2}
+        //public void SelectProduct()
+        //{
+        //    Console.WriteLine(DisplayItems());
 
-1. Feed Money
-2. Select Product
-3. Finish Transaction");
-            Console.WriteLine();
-            // Defensive coding for user input to choose an option
-            int option = 0;
-            do
-            {
-                try
-                {
-                    option = int.Parse(Console.ReadLine());
-                    if (option < 1 || option > 3)
-                    {
-                        Console.WriteLine("\nHmm... Try entering 1, 2, or 3.");
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Please enter 1, 2, or 3");
-                }
-            }
-            while (option < 1 || option > 3);
-
-            switch (option)
-            {
-                case 1:
-                    FeedMoney();
-                    break;
-                case 2:
-                    SelectProduct();
-                    break;
-                case 3:
-                    FinalizeTransaction();
-                    break;
-            }
-        }
-
-        public void FeedMoney()
-        {
-            Console.WriteLine("Please input your money, in WHOLE DOLLAS");
-            int dollarAmount = 0;
-            do
-            {
-                try
-                {
-                    dollarAmount = int.Parse(Console.ReadLine());
-                    if (dollarAmount < 1)
-                    {
-                        Console.WriteLine("Please enter a POSTIVE whole number");
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Please enter a positive whole number");
-                }
-            }
-            while (dollarAmount < 1);
-
-            decimal decimalAmount = (decimal)dollarAmount;
-            Balance += decimalAmount;
-            AddToLog("Feed Money", decimalAmount);
-            DisplayPurchaseOptions();
-        }
-
-        public void SelectProduct()
-        {
-            DisplayItems();
-
-            Console.WriteLine("\nPlease make your selection by entering the Slot ID (ex: A1)\n");
-            string slotID = "";
-            slotID = Console.ReadLine();
-            if (!SlotToAnimalDictionary.ContainsKey(slotID))
-            {
-                Console.WriteLine("Invalid Slot ID, try again.");
-                DisplayPurchaseOptions();
-            }
-            else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
-            {
-                Console.WriteLine("Sorry, item SOLD OUT!");
-                DisplayPurchaseOptions();
-            }
-            else if (SlotToAnimalDictionary[slotID].Price > Balance)
-            {
-                Console.WriteLine("Sorry, not enough funds");
-                DisplayPurchaseOptions();
-            }
-            else
-            {
-                Dispense(SlotToAnimalDictionary[slotID]);
-                DisplayPurchaseOptions();
-            }
-        }
+        //    Console.WriteLine("\nPlease make your selection by entering the Slot ID (ex: A1)\n");
+        //    string slotID = "";
+        //    slotID = Console.ReadLine();
+        //    if (!SlotToAnimalDictionary.ContainsKey(slotID))
+        //    {
+        //        Console.WriteLine("Invalid Slot ID, try again.");
+        //        DisplayPurchaseOptions();
+        //    }
+        //    else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
+        //    {
+        //        Console.WriteLine("Sorry, item SOLD OUT!");
+        //        DisplayPurchaseOptions();
+        //    }
+        //    else if (SlotToAnimalDictionary[slotID].Price > Balance)
+        //    {
+        //        Console.WriteLine("Sorry, not enough funds");
+        //        DisplayPurchaseOptions();
+        //    }
+        //    else
+        //    {
+        //        Dispense(SlotToAnimalDictionary[slotID]);
+        //        DisplayPurchaseOptions();
+        //    }
+        //}
 
         public void FinalizeTransaction()
         {
