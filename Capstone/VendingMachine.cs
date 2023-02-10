@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Transactions;
+using System.Speech.Synthesis;
 
 namespace Capstone
 {
@@ -15,6 +16,7 @@ namespace Capstone
         public List<Animal> Inventory { get; } = new List<Animal>();
         public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>(); // Key = the animal's slot ID, Value = the animal object
         public Transaction Transaction { get; set; }
+        //public SpeechSynthesizer synthesizer { get; } = new SpeechSynthesizer();
 
         //File paths for input and output files.
         string inputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\vendingmachine.csv";
@@ -39,6 +41,10 @@ namespace Capstone
         //The main menu call function. Uses while loops and conditional logic to display appropriate menu options.
         public void Run()
         {
+            var synth = new SpeechSynthesizer();
+            synth.SetOutputToDefaultAudioDevice();
+            synth.Speak("...Beep Boop Bop. Beep Boop!");
+
             Transaction = new Transaction();
             while (true)
             {
@@ -281,6 +287,8 @@ Current money provided: {Transaction.Balance:C2}
             string purchaseString = $"You purchased {animal.Name} for {animal.Price:C2}! \n";
             string dispenseMessage = animal.DispenseMessage;
             string remainingBalance = $"\nYour remaining balance is {Transaction.Balance:C2}";
+            
+            
             return purchaseString + dispenseMessage + remainingBalance;
 
         }

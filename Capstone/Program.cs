@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Speech.Synthesis;
 
 namespace Capstone
 {
@@ -6,6 +7,7 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
+            
             VendingMachine VM = new VendingMachine();
             Console.Write("Welcome!");
             VM.Run();
