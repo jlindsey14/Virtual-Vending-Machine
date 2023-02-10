@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Transactions;
 
 namespace Capstone
 {
@@ -77,7 +78,7 @@ Please select from the following options: (enter number)
             {
                 using (StreamReader sr = new StreamReader(inputFilePath))
                 {
-                    while(!sr.EndOfStream)
+                    while (!sr.EndOfStream)
                     {
                         string lineOfText = sr.ReadLine();
                         string[] splitLine = lineOfText.Split("|");
@@ -90,7 +91,7 @@ Please select from the following options: (enter number)
                     }
                 }
             }
-            catch(Exception)
+            catch (Exception)
             { Console.WriteLine("Error reading file"); }
         }
 
@@ -128,9 +129,9 @@ Please select from the following options: (enter number)
             }
             try
             {
-                using(StreamWriter sw = new StreamWriter(salesReportFilePath, false))
+                using (StreamWriter sw = new StreamWriter(salesReportFilePath, false))
                 {
-                    foreach(string item in salesReportItems)
+                    foreach (string item in salesReportItems)
                     {
                         sw.WriteLine(item);
                     }
@@ -138,7 +139,7 @@ Please select from the following options: (enter number)
                     sw.WriteLine($"TOTAL SALES: {totalSale:C2}");
                 }
             }
-            catch(Exception)
+            catch (Exception)
             { Console.WriteLine("Error writing sales report"); }
 
 
