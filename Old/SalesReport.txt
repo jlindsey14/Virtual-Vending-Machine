@@ -12,7 +12,7 @@ Tabby Cat|0
 Calico Cat|0
 Unicorn Pony|0
 Pegasus Pony|0
-Horse|5
-Rainbow Horse|0
+Horse|0
+Rainbow Horse|1
 
-TOTAL SALES: $4.50
+TOTAL SALES: $1.35

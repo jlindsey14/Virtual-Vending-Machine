@@ -7,154 +7,25 @@ namespace Capstone
 {
     public class Transaction
     {
-        public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>();
-        public VendingMachine VM { get; }
         public List<string> Logs { get; set; } = new List<string>();// Contains list of logs items that detail: DateTime, action, amount deposited/spent, new balance
         public decimal Balance { get; set; } = 0M;
 
-        string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
-
-        public Transaction(VendingMachine VM) 
+        //Updates balance and logs when money is fed
+        public void FeedMoney(decimal input)
         {
-            this.VM = VM;
-
-            foreach (Animal animal in VM.Inventory)
-            {
-                SlotToAnimalDictionary[animal.SlotID] = animal;
-            }
+            Balance += input;
+            AddToLog("Feed Money", input);
         }
 
-
-
-        public void DisplayItems()
-        {
-            Console.WriteLine();
-            Console.WriteLine("Available Inventory:");
-            Console.WriteLine();
-            foreach (Animal animal in VM.Inventory)
-            {
-                string availability = animal.NumRemaining > 0 ? (animal.NumRemaining).ToString() + " left" : "Sold Out";
-                Console.WriteLine($"{animal.SlotID}. {animal.Name} {animal.Price:C2} ({availability})"); 
-            }
-        }
-
-        // Purchase menu
-        public void DisplayPurchaseOptions()
-        {
-            Console.WriteLine(@$"
-Current money provided: {Balance:C2}
-
-1. Feed Money
-2. Select Product
-3. Finish Transaction");
-            Console.WriteLine();
-            // Defensive coding for user input to choose an option
-            int option = 0;
-            do
-            {
-                try
-                {
-                    option = int.Parse(Console.ReadLine());
-                    if (option < 1 || option > 3)
-                    {
-                        Console.WriteLine("\nHmm... Try entering 1, 2, or 3.");
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Please enter 1, 2, or 3");
-                }
-            }
-            while (option < 1 || option > 3);
-            
-            switch(option)
-            {
-                case 1:
-                    FeedMoney();
-                    break;
-                case 2:
-                    SelectProduct();
-                    break;
-                case 3:
-                    FinalizeTransaction();
-                    break;
-            }
-        }
-
-        public void FeedMoney()
-        {
-            Console.WriteLine("Please input your money, in WHOLE DOLLAS");
-            int dollarAmount = 0;
-            do
-            {
-                try
-                {
-                    dollarAmount = int.Parse(Console.ReadLine());
-                    if(dollarAmount < 1)
-                    {
-                        Console.WriteLine("Please enter a POSTIVE whole number");
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Please enter a positive whole number");
-                }
-            }
-            while (dollarAmount < 1);
-
-            decimal decimalAmount = (decimal)dollarAmount;
-            Balance += decimalAmount;
-            AddToLog("Feed Money", decimalAmount);
-            DisplayPurchaseOptions();
-        }
-
-        public void SelectProduct()
-        {
-            DisplayItems();
-
-            Console.WriteLine("\nPlease make your selection by entering the Slot ID (ex: A1)\n");
-            string slotID = "";
-            slotID = Console.ReadLine();
-            if(!SlotToAnimalDictionary.ContainsKey(slotID))
-            {
-                Console.WriteLine("Invalid Slot ID, try again.");
-                DisplayPurchaseOptions();
-            }
-            else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
-            {
-                Console.WriteLine("Sorry, item SOLD OUT!");
-                DisplayPurchaseOptions();
-            }
-            else if (SlotToAnimalDictionary[slotID].Price > Balance)
-            {
-                Console.WriteLine("Sorry, not enough funds");
-                DisplayPurchaseOptions();
-            }
-            else
-            {
-                Dispense(SlotToAnimalDictionary[slotID]);
-                DisplayPurchaseOptions();
-            }
-        }
-
-        public void FinalizeTransaction()
-        {
-            GiveChange();
-            WriteLog();
-            Console.WriteLine("\nWelcome!");
-            VM.DisplayOptions();
-        }
-
+        //Updates inventory, logs, and balance when an animal is dispensed
         public void Dispense(Animal animal)
         {
             Balance -= animal.Price;
-            Console.WriteLine($"You purchased {animal.Name} for {animal.Price:C2}!");
-            Console.WriteLine(animal.DispenseMessage);
-            Console.WriteLine($"Your remaining balance is {Balance:C2}");
             animal.NumRemaining--;
             AddToLog(animal.Name + " " + animal.SlotID, animal.Price);
         }
 
+        //Refunds balance to customer and returns the string representing monetary denominations
         public string GiveChange()
         {
             //Calculating change denominations
@@ -168,8 +39,6 @@ Current money provided: {Balance:C2}
             totalChange -= (numDimes * .1M);
             int numNickels = (int)(totalChange / 0.05M);
             totalChange -= (numNickels * .05M);
-            int numPennies = (int)(totalChange / 0.01M);
-            totalChange -= (numPennies * .01M);
 
             decimal totalChangeDispensed = Balance;
             Balance = 0;
@@ -190,35 +59,16 @@ Current money provided: {Balance:C2}
             }
             changeMessage = changeMessage.Substring(0, changeMessage.Length - 2);
             changeMessage += ". Thank you!";
-            Console.WriteLine(changeMessage);
             AddToLog("Give Change", totalChangeDispensed);
             return changeMessage;
         }
 
+        //Adding a line to the log based on previous actions (Dispense, Feedmoney, or Give change)
         public void AddToLog(string actionName, decimal decimalAmount)
         {
             string logMessage = $"{DateTime.Now} {actionName} {decimalAmount:C2} {Balance:C2}";
             Logs.Add(logMessage);
         }
 
-        public void WriteLog()
-        {
-            try
-            {
-                using (StreamWriter sw = new StreamWriter(outputFilePath, false))
-                {
-                    foreach (string logitem in Logs)
-                    {
-                        sw.WriteLine(logitem);
-                    }
-
-                }
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Error writing file. GIT GUD");
-            }
-
-        }
-    }
+    }       
 }

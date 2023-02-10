@@ -7,64 +7,14 @@ namespace Capstone
 {
     public class Transaction
     {
-        //public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>();
-        //public VendingMachine VM { get; }
         public List<string> Logs { get; set; } = new List<string>();// Contains list of logs items that detail: DateTime, action, amount deposited/spent, new balance
         public decimal Balance { get; set; } = 0M;
-
-        //string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
-
-        public Transaction()
-        {
-
-        }
-
-
-
-
 
         public void FeedMoney(decimal input)
         {
             Balance += input;
             AddToLog("Feed Money", input);
         }
-
-        //public void SelectProduct()
-        //{
-        //    Console.WriteLine(DisplayItems());
-
-        //    Console.WriteLine("\nPlease make your selection by entering the Slot ID (ex: A1)\n");
-        //    string slotID = "";
-        //    slotID = Console.ReadLine();
-        //    if (!SlotToAnimalDictionary.ContainsKey(slotID))
-        //    {
-        //        Console.WriteLine("Invalid Slot ID, try again.");
-        //        DisplayPurchaseOptions();
-        //    }
-        //    else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
-        //    {
-        //        Console.WriteLine("Sorry, item SOLD OUT!");
-        //        DisplayPurchaseOptions();
-        //    }
-        //    else if (SlotToAnimalDictionary[slotID].Price > Balance)
-        //    {
-        //        Console.WriteLine("Sorry, not enough funds");
-        //        DisplayPurchaseOptions();
-        //    }
-        //    else
-        //    {
-        //        Dispense(SlotToAnimalDictionary[slotID]);
-        //        DisplayPurchaseOptions();
-        //    }
-        //}
-
-        //public void FinalizeTransaction()
-        //{
-        //    GiveChange();
-        //    WriteLog();
-        //    Console.WriteLine("\nWelcome!");
-        //    VM.DisplayOptions();
-        //}
 
         public void Dispense(Animal animal)
         {
@@ -106,7 +56,6 @@ namespace Capstone
             }
             changeMessage = changeMessage.Substring(0, changeMessage.Length - 2);
             changeMessage += ". Thank you!";
-            Console.WriteLine(changeMessage);
             AddToLog("Give Change", totalChangeDispensed);
             return changeMessage;
         }

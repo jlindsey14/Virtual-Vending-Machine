@@ -32,11 +32,51 @@ namespace Capstone
                 //Start main menu
                 Console.WriteLine(DisplayMainMenu());
                 int mainMenuChoice = GetMainMenuChoice();
-                if (mainMenuChoice == 3)
+
+                //View Inventory
+                if (mainMenuChoice == 1)
+                {
+                    Console.WriteLine(DisplayItems());
+                }
+
+                //Purchase Menu Selection
+                else if (mainMenuChoice == 2)
+                {
+                    while (true)
+                    {
+                        //Start Purchase Menu
+                        int purchaseChoice = 0;
+                        Console.WriteLine(DisplayPurchaseMenu());
+                        purchaseChoice = GetPurchaseInput();
+
+                        //Feed Money
+                        if (purchaseChoice == 1)
+                        {
+                            Console.WriteLine(CallPurchaseOption(1));
+                        }
+                        //Select Item
+                        if (purchaseChoice == 2)
+                        {
+                            Console.WriteLine(Dispense(SlotToAnimalDictionary[CallPurchaseOption(2)]));
+                        }
+                        //Finalize Transaction
+                        if (purchaseChoice == 3)
+                        {
+                            Console.WriteLine(CallPurchaseOption(3));
+                            break;
+                        }
+                    }
+                }
+                //Exit
+                else if (mainMenuChoice == 3)
                 {
                     break;
                 }
-                Console.WriteLine(CallMenuOption(mainMenuChoice)); 
+                //Secret Sales Report
+                else
+                {
+                    Console.WriteLine(WriteSalesReport());
+                }
             }   
         }
 
@@ -74,32 +114,6 @@ Please select from the following options: (enter number)
             while (option < 1 || option > 4);
             return option;
         }
-
-        public string CallMenuOption(int option)
-        {
-            switch (option)
-            {
-                case 1:
-                    return DisplayItems();
-                case 2:
-                    int purchaseChoice = 0;
-                    Console.WriteLine(DisplayPurchaseOptions());
-                    purchaseChoice = GetPurchaseInput();
-                    if(purchaseChoice == 3)
-                    {
-                        CallPurchaseOption(3);
-                        break;
-                    }
-                    return CallPurchaseOption(purchaseChoice);
-                case 3:
-                    return "Exit";
-                case 4:
-                    WriteSalesReport();
-                    return "Generating secret sales report.....";
-            }        
-            return "";
-        }
-
         public string DisplayItems()
         {
             string displayItems = "";
@@ -115,7 +129,7 @@ Please select from the following options: (enter number)
         }
 
         // Purchase menu
-        public string DisplayPurchaseOptions()
+        public string DisplayPurchaseMenu()
         {
             return @$"
 Current money provided: {Transaction.Balance:C2}
@@ -174,8 +188,8 @@ Current money provided: {Transaction.Balance:C2}
                     return slotID;
                 case 3:
                     return FinalizeTransaction();
-            }  
-            
+            }
+            return "";
         }
 
         public decimal FeedMoney()
@@ -280,7 +294,7 @@ Current money provided: {Transaction.Balance:C2}
 
         }
 
-        public void WriteSalesReport()
+        public string WriteSalesReport()
         {
             decimal totalSale = 0;
             List<string> salesReportItems = new List<string>();
@@ -305,9 +319,8 @@ Current money provided: {Transaction.Balance:C2}
                 }
             }
             catch (Exception)
-            { Console.WriteLine("Error writing sales report"); }
-
-
+            { return "Error writing sales report"; }
+            return "Generating secret sales report.....";
         }
     }
 }
