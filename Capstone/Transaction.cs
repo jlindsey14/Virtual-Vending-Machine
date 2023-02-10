@@ -11,10 +11,13 @@ namespace Capstone
         public VendingMachine VM { get; }
         public List<string> Logs { get; set; } = new List<string>();// Contains list of logs items that detail: DateTime, action, amount deposited/spent, new balance
         public decimal Balance { get; set; } = 0M;
-        
-        public Transaction(VendingMachine vendingMachine) 
+
+        string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
+
+        public Transaction(VendingMachine VM) 
         {
-            VM = vendingMachine;
+            this.VM = VM;
+
             foreach (Animal animal in VM.Inventory)
             {
                 SlotToAnimalDictionary[animal.SlotID] = animal;
@@ -137,7 +140,7 @@ Current money provided: {Balance:C2}
         public void FinalizeTransaction()
         {
             GiveChange();
-            VM.WriteLog();
+            WriteLog();
             Console.WriteLine("\nWelcome!");
             VM.DisplayOptions();
         }
@@ -152,7 +155,7 @@ Current money provided: {Balance:C2}
             AddToLog(animal.Name + " " + animal.SlotID, animal.Price);
         }
 
-        public void GiveChange()
+        public string GiveChange()
         {
             //Calculating change denominations
             decimal decimalBalance = Balance;
@@ -173,23 +176,23 @@ Current money provided: {Balance:C2}
 
             //Creating a dictionary to print change 
             Dictionary<string, int> changeDict = new Dictionary<string, int>{
-                { "dollars", numDollars },
-                { "quarters", numQuarters },
-                { "dimes", numDimes},
-                { "nickels", numNickels },
-                { "pennies", numPennies }  };
+                { "dollar", numDollars },
+                { "quarter", numQuarters },
+                { "dime", numDimes},
+                { "nickel", numNickels }, };
             string changeMessage = $"Your change is {totalChangeDispensed:C2}. You'll recieve: ";
             foreach (KeyValuePair<string, int> kvp in changeDict)
             {
                 if (kvp.Value > 0)
                 {
-                    changeMessage += $"{kvp.Value} {kvp.Key}, ";
+                    changeMessage += $"{kvp.Value} {kvp.Key}{(kvp.Value != 1 ? "s" : String.Empty)}, ";
                 }
             }
             changeMessage = changeMessage.Substring(0, changeMessage.Length - 2);
             changeMessage += ". Thank you!";
             Console.WriteLine(changeMessage);
             AddToLog("Give Change", totalChangeDispensed);
+            return changeMessage;
         }
 
         public void AddToLog(string actionName, decimal decimalAmount)
@@ -198,6 +201,24 @@ Current money provided: {Balance:C2}
             Logs.Add(logMessage);
         }
 
-        
+        public void WriteLog()
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(outputFilePath, false))
+                {
+                    foreach (string logitem in Logs)
+                    {
+                        sw.WriteLine(logitem);
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error writing file. GIT GUD");
+            }
+
+        }
     }
 }
