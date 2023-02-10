@@ -12,7 +12,7 @@ namespace Capstone
         public Dictionary<string, Animal> SlotToAnimalDictionary { get; } = new Dictionary<string, Animal>();
         public Transaction Transaction { get; set; }
         string inputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\vendingmachine.csv";
-        //string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
+        string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
         string salesReportFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\SalesReport.txt";
 
         public VendingMachine()
@@ -26,19 +26,18 @@ namespace Capstone
 
         public void Run()
         {
-            Transaction = new Transaction(Inventory);
+            Transaction = new Transaction();
             while (true)
             {
+                //Start main menu
                 Console.WriteLine(DisplayOptions());
                 int optionChoice = GetOptionChoice();
                 if (optionChoice == 3)
                 {
                     break;
                 }
-                Console.WriteLine(CallMenuOption(optionChoice));
-                int purchaseChoice = GetPurchaseInput();
-                Console.WriteLine(CallPurchaseOption(purchaseChoice));
-            }
+                Console.WriteLine(CallMenuOption(optionChoice)); 
+            }   
         }
 
         public string DisplayOptions()
@@ -83,7 +82,19 @@ Please select from the following options: (enter number)
                 case 1:
                     return DisplayItems();
                 case 2:
-                    return DisplayPurchaseOptions();
+                    int purchaseChoice = 0;
+                    while (true)
+                    {
+                  
+                        Console.WriteLine(DisplayPurchaseOptions());
+                        purchaseChoice = GetPurchaseInput();
+                        if(purchaseChoice == 3)
+                        {
+                            CallPurchaseOption(3);
+                            break;
+                        }
+                    }
+                    return CallPurchaseOption(purchaseChoice);
                 case 3:
                     return "Exit";
                 case 4:
@@ -144,16 +155,34 @@ Current money provided: {Transaction.Balance:C2}
 
         public string CallPurchaseOption(int option)
         {
-            switch (option)
+            while (true)
             {
-                case 1:
-                    decimal moneyFed = FeedMoney();
-                    Transaction.FeedMoney(moneyFed);
-                    return "";
-                case 2:
-                    return SelectProduct();
-                case 3:
-                    return FinalizeTransaction();
+                if (option == 1 | option ==2)
+                {
+                    switch (option)
+                    {
+                        case 1:
+                            decimal moneyFed = FeedMoney();
+                            Transaction.FeedMoney(moneyFed);
+                            return "";
+                        case 2:
+                            string slotID = SelectProduct();
+                            if (!SlotToAnimalDictionary.ContainsKey(slotID))
+                            {
+                                return "Invalid Slot ID, try again.";
+                            }
+                            else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
+                            {
+                                return "Sorry, item SOLD OUT!";
+                            }
+                            else if (SlotToAnimalDictionary[slotID].Price > Transaction.Balance)
+                            {
+                                return ("Sorry, not enough funds");
+                            }
+                            return slotID;
+                    }  
+                }
+                else FinalizeTransaction(); 
             }
         }
 
@@ -182,30 +211,35 @@ Current money provided: {Transaction.Balance:C2}
             return decimalAmount;
         }
 
-        public void SelectProduct()
+        public string SelectProduct()
         {
             Console.WriteLine(DisplayItems());
 
             Console.WriteLine("\nPlease make your selection by entering the Slot ID (ex: A1)\n");
             string slotID = "";
             slotID = Console.ReadLine();
-            if (!SlotToAnimalDictionary.ContainsKey(slotID))
-            {
-                Console.WriteLine("Invalid Slot ID, try again.");
-            }
-            else if (SlotToAnimalDictionary[slotID].NumRemaining < 1)
-            {
-                Console.WriteLine("Sorry, item SOLD OUT!");
-            }
-            else if (SlotToAnimalDictionary[slotID].Price > Balance)
-            {
-                Console.WriteLine("Sorry, not enough funds");
-            }
-            else
-            {
-                Dispense(SlotToAnimalDictionary[slotID]);
-            }
+            return slotID;
         }
+
+        public string FinalizeTransaction()
+        {
+            string changeGiven = Transaction.GiveChange();
+            WriteLog();
+            return changeGiven + "\nWelcome!";
+        }
+
+        public string Dispense(Animal animal)
+        {
+            Transaction.Dispense(animal);
+            string purchaseString = $"You purchased {animal.Name} for {animal.Price:C2}! \n";
+            string dispenseMessage = animal.DispenseMessage;
+            string remainingBalance = $"\nYour remaining balance is {Transaction.Balance:C2}";
+            return purchaseString + dispenseMessage + remainingBalance;
+
+        }
+
+
+        // REPORTS: 
         public void FileRead()
         {
             try
@@ -229,25 +263,25 @@ Current money provided: {Transaction.Balance:C2}
             { Console.WriteLine("Error reading file"); }
         }
 
-        //public void WriteLog()
-        //{
-        //    try
-        //    {
-        //        using (StreamWriter sw = new StreamWriter(outputFilePath, false))
-        //        {
-        //            foreach(string logitem in Transaction.Logs)
-        //            {
-        //                sw.WriteLine(logitem);
-        //            }
+        public void WriteLog()
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(outputFilePath, false))
+                {
+                    foreach (string logitem in Transaction.Logs)
+                    {
+                        sw.WriteLine(logitem);
+                    }
 
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        Console.WriteLine("Error writing file. GIT GUD");
-        //    }
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error writing file. GIT GUD");
+            }
 
-        //}
+        }
 
         public void WriteSalesReport()
         {

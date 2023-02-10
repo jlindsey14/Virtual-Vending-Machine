@@ -12,13 +12,11 @@ namespace Capstone
         public List<string> Logs { get; set; } = new List<string>();// Contains list of logs items that detail: DateTime, action, amount deposited/spent, new balance
         public decimal Balance { get; set; } = 0M;
 
-        string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
+        //string outputFilePath = "C:\\Users\\Student\\workspace\\c-sharp-minicapstonemodule1-team2\\Log.txt";
 
         public Transaction()
         {
-            
 
-            
         }
 
 
@@ -28,6 +26,7 @@ namespace Capstone
         public void FeedMoney(decimal input)
         {
             Balance += input;
+            AddToLog("Feed Money", input);
         }
 
         //public void SelectProduct()
@@ -59,20 +58,17 @@ namespace Capstone
         //    }
         //}
 
-        public void FinalizeTransaction()
-        {
-            GiveChange();
-            WriteLog();
-            Console.WriteLine("\nWelcome!");
-            VM.DisplayOptions();
-        }
+        //public void FinalizeTransaction()
+        //{
+        //    GiveChange();
+        //    WriteLog();
+        //    Console.WriteLine("\nWelcome!");
+        //    VM.DisplayOptions();
+        //}
 
         public void Dispense(Animal animal)
         {
             Balance -= animal.Price;
-            Console.WriteLine($"You purchased {animal.Name} for {animal.Price:C2}!");
-            Console.WriteLine(animal.DispenseMessage);
-            Console.WriteLine($"Your remaining balance is {Balance:C2}");
             animal.NumRemaining--;
             AddToLog(animal.Name + " " + animal.SlotID, animal.Price);
         }
@@ -121,24 +117,5 @@ namespace Capstone
             Logs.Add(logMessage);
         }
 
-        public void WriteLog()
-        {
-            try
-            {
-                using (StreamWriter sw = new StreamWriter(outputFilePath, false))
-                {
-                    foreach (string logitem in Logs)
-                    {
-                        sw.WriteLine(logitem);
-                    }
-
-                }
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Error writing file. GIT GUD");
-            }
-
-        }
-    }
+    }       
 }
